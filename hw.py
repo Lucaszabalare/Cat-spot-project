@@ -15,22 +15,40 @@ game_complete = False
 current_level = 1
 animations = []
 cats = []
-
 def draw():
+    global items,game_over,game_complete,current_level
     screen.clear()
     screen.fill("white")
+    if game_over:
+        display_message("YOU LOST!","Hiss.<angrymeow>")
+    elif game_complete:
+        display_message("YOU WON!","Meow Meow!<happymeow>")
+    else:
+        for cat in cats:
+            cat.draw()
 
 def update():
-    pass
+    global cats
+    if len(cats) == 0:
+        cats = make_cats(current_level)
 
-def get_option(extra_items):
+
+
+def make_cats(extra_cats):
+    cats_to_create = get_option(extra_cats)
+    new_items = create_cats(cats_to_create)
+    layout_cats(new_items)
+    animate_cats(new_items)
+    return new_items
+
+def get_option(extra_cats):
     cats_to_create = ["susie"]
-    for i in range(extra_items):
+    for i in range(extra_cats):
         random_option = random.choice(CATS)
         cats_to_create.append(random_option)
     return cats_to_create
 
-def create_cat(cats_to_create):
+def create_cats(cats_to_create):
     new_items = []
     for option in cats_to_create:
         item = Actor(option + "img")
@@ -49,7 +67,7 @@ def animate_cats(cats_to_animate):
     global animations
     for cat in cats_to_animate:
         duration = START_SPEED - current_level
-        cat.anchor("center","bottom")
+        cat.anchor = ("center","bottom")
         animation = animate(cat,duration=duration,on_finished=handle_game_over,y = HEIGHT)
         animations.append(animation)
     
@@ -81,5 +99,8 @@ def stop_animations(animations_to_stop):
         if animation.running:
             animation.stop()
 
+def display_message(main_text,sub_text):
+    screen.draw.text(main_text,fontsize = 60,color = "Orange",center = CENTER)
+    screen.draw.text(sub_text,fontsize = 30, color = "Orange",center = (CENTER_X,CENTER_Y + 40))
 
 pgzrun.go()
